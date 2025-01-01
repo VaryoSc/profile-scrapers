@@ -1,0 +1,7 @@
+*.csv
+*.png
+*.jpeg
+*.jpg
+*.env
+.idea
+.etc

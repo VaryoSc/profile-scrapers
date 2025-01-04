@@ -1,28 +1,22 @@
-import csv
 import os
 import time
 from typing import List
 
 import typer
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
+from selenium.webdriver.support.ui import WebDriverWait
+
+from utils import generate_file, use_driver
 
 app = typer.Typer()
 
-def use_driver():
-    """placeholder code to generate the webdriver
-
-    May upgrade later
-    """
-    driver = webdriver.Chrome()
-    return driver
 
 @app.command()
-def get_profile(users: List[str], driver = None):
+def get_profile(users: List[str], driver=None):
     if not driver:
         driver = webdriver.Chrome()
 
@@ -40,7 +34,7 @@ def get_profile(users: List[str], driver = None):
         print("Waiting for page to load...")
 
         # try:
-            # Wait until the profile image is loaded
+        # Wait until the profile image is loaded
         #     WebDriverWait(driver, 60).until(
         #         EC.presence_of_element_located((By.CLASS_NAME, picture_class))
         #     )
@@ -51,13 +45,11 @@ def get_profile(users: List[str], driver = None):
         #     exit()
         time.sleep(5)
 
-
         # Get the page source after everything is loaded
         page_source = driver.page_source
 
         # Parse the page with BeautifulSoup
         soup = BeautifulSoup(page_source, 'html.parser')
-
 
         # Set up headers to mimic a real browser request (optional, not used in this code snippet)
         headers = {
@@ -74,17 +66,13 @@ def get_profile(users: List[str], driver = None):
         # Build the profile dictionary with image and bio
         profile = {
             "url": url,
-            "image": soup.find('img', alt=profile_photo_elm).get("src") if soup.find('img', alt=profile_photo_elm) else "Image not found",
+            "image": soup.find('img', alt=profile_photo_elm).get("src") if soup.find('img',
+                                                                                     alt=profile_photo_elm) else "Image not found",
             "bio": bio,
         }
 
-        with open(file_name, 'a', encoding="utf-8-sig") as products_file:
-            writer = csv.writer(products_file)
-            writer.writerow(list(profile.values()))
-            print("Added profile!")
+        generate_file(user_id, file_name, list(profile.values()))
 
-    # Quit the driver after scraping
-    driver.quit()
 
 @app.command()
 def login(users: List[str]):
@@ -129,6 +117,7 @@ def login(users: List[str]):
 
     print("Getting user's profile...")
     get_profile(users, driver)
+
 
 if __name__ == "__main__":
     app()

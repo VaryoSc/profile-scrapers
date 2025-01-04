@@ -1,10 +1,8 @@
-import csv
 import re
 import time
 from typing import List
 
 import typer
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -16,6 +14,15 @@ app = typer.Typer()
 
 @app.command()
 def get_profile(users: List[str], driver=None):
+    """Get a list of user profiles and return their bio and profile
+    image if any telegram account exists for them
+
+    Arguments:
+        users {List[str]} -- List of user names or phone numbers
+        driver {seleniumWebdriver} -- Optional. pass the driver session
+    Returns: None, writes two files, a profile image png file with the
+    associated user's id as name and a csv file containing
+    """
     if not driver:
         driver = use_driver()
 
@@ -89,22 +96,28 @@ def get_profile(users: List[str], driver=None):
                     (By.XPATH,
                      "//div[@class='input-search']/input[1]"))
             )
-            search_bar_input = driver.find_element(
-                By.XPATH,
-                "//div[@class='input-search']/input[1]"
-            )
-            search_bar_input.send_keys(user_id)
-            time.sleep(3)
-            WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH,
-                     "//ul[@id='contacts']/a[1]"))
-            )
-            requested_user = driver.find_element(
-                By.XPATH,
-                "//ul[@id='contacts']/a[1]"
-            )
-            requested_user.click()
+            try:
+                search_bar_input = driver.find_element(
+                    By.XPATH,
+                    "//div[@class='input-search']/input[1]"
+                )
+                search_bar_input.send_keys(user_id)
+                time.sleep(3)
+                WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable(
+                        (By.XPATH,
+                         "//ul[@id='contacts']/a[1]"))
+                )
+                requested_user = driver.find_element(
+                    By.XPATH,
+                    "//ul[@id='contacts']/a[1]"
+                )
+                requested_user.click()
+            except Exception as e:
+                generate_file("NO telegram account", file_name, ["no account for user:", user_id])
+                print(e)
+                continue
+
 
         else:
             url = f'https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3D{user_id}'

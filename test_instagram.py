@@ -3,18 +3,15 @@ import os
 import time
 from typing import List
 
-import typer
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
+from selenium.webdriver.support.ui import WebDriverWait
 
 
-def get_profile(users: List[str], driver = webdriver.Chrome()):
-
-
+def get_profile(users: List[str], driver=webdriver.Chrome()):
     bio_class = "x7a106z x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x78zum5 xdt5ytf x2lah0s xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x1n2onr6 x11njtxf xskmkbu x1pjya6o x14cbv0q x7wvtww x9v3v6d x17eookw x1q548z6"
     picture_class = "xpdipgo x972fbf xcfux6l x1qhh985 xm0m39n xk390pu x5yr21d xdj266r x11i5rnm xat24cr x1mh8g0r xl1xv1r xexx8yu x4uap5 x18d9i69 xkhd6sd x11njtxf xh8yej3"
     file_name = time.strftime("%Y%m%d%H%M%S", time.localtime()) + ".csv"
@@ -29,7 +26,7 @@ def get_profile(users: List[str], driver = webdriver.Chrome()):
         print("Waiting for page to load...")
 
         try:
-           # Wait until the profile image is loaded
+            # Wait until the profile image is loaded
             WebDriverWait(driver, 60).until(
                 EC.presence_of_element_located((By.CLASS_NAME, picture_class))
             )
@@ -39,13 +36,11 @@ def get_profile(users: List[str], driver = webdriver.Chrome()):
             driver.quit()
             exit()
 
-
         # Get the page source after everything is loaded
         page_source = driver.page_source
 
         # Parse the page with BeautifulSoup
         soup = BeautifulSoup(page_source, 'html.parser')
-
 
         # Set up headers to mimic a real browser request (optional, not used in this code snippet)
         headers = {
@@ -62,7 +57,8 @@ def get_profile(users: List[str], driver = webdriver.Chrome()):
         # Build the profile dictionary with image and bio
         profile = {
             "url": url,
-            "image": soup.find('img', alt=profile_photo_elm).get("src") if soup.find('img', alt=profile_photo_elm) else "Image not found",
+            "image": soup.find('img', alt=profile_photo_elm).get("src") if soup.find('img',
+                                                                                     alt=profile_photo_elm) else "Image not found",
             "bio": bio,
         }
 
@@ -73,6 +69,7 @@ def get_profile(users: List[str], driver = webdriver.Chrome()):
 
     # Quit the driver after scraping
     driver.quit()
+
 
 users = ["mobinpiri9902"]
 load_dotenv()

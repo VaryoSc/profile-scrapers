@@ -3,13 +3,13 @@ import time
 from typing import List
 
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from utils import generate_file, use_driver
 
 
-def get_profile(users: List[str], driver = None):
+def get_profile(users: List[str], driver=None):
     if not driver:
         driver = use_driver()
 
@@ -92,7 +92,7 @@ def get_profile(users: List[str], driver = None):
             WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable(
                     (By.XPATH,
-                    "//ul[@id='contacts']/a[1]"))
+                     "//ul[@id='contacts']/a[1]"))
             )
             requested_user = driver.find_element(
                 By.XPATH,
@@ -138,13 +138,13 @@ def get_profile(users: List[str], driver = None):
         for i in range(len(profile['avatarImages'])):
             WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH,
-                f"//div[@class='avatar avatar-like avatar-full"
-                +" avatar-gradient profile-avatars-avatar-first']"
-                +"/img[@class='avatar-photo']")))
+                                            f"//div[@class='avatar avatar-like avatar-full"
+                                            + " avatar-gradient profile-avatars-avatar-first']"
+                                            + "/img[@class='avatar-photo']")))
             img = driver.find_element(
                 By.XPATH,
                 f"//div[@class='avatar avatar-like avatar-full"
-                +" avatar-gradient profile-avatars-avatar-first']"
+                + " avatar-gradient profile-avatars-avatar-first']"
             )
             try:
                 img.click()
@@ -155,6 +155,7 @@ def get_profile(users: List[str], driver = None):
             time.sleep(.7)
             img.screenshot(f'{user_id}_{i}.png')
         generate_file(user_id, file_name, profile)
+
 
 driver = use_driver()
 site = "https://web.telegram.org/k/"

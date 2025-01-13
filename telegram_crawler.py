@@ -91,18 +91,24 @@ def get_profile(users: List[str], driver=None):
                 "//button[@class='btn-primary btn-color-primary']"
             )
             create_contact_button.click()
+            WebDriverWait(driver, 60).until(
+                EC.invisibility_of_element_located(
+                    (By.XPATH,
+                     "//button[@class='btn-primary btn-color-primary']"))
+            )
             WebDriverWait(driver, 15).until(
                 EC.element_to_be_clickable(
                     (By.XPATH,
-                     "//div[@class='input-search']/input[1]"))
+                     "//div[@class='input-search']"))
             )
             try:
                 search_bar_input = driver.find_element(
                     By.XPATH,
                     "//div[@class='input-search']/input[1]"
                 )
+                search_bar_input.click()
                 search_bar_input.send_keys(user_id)
-                time.sleep(3)
+                time.sleep(1)
                 WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable(
                         (By.XPATH,
@@ -173,7 +179,8 @@ def get_profile(users: List[str], driver=None):
                 print("")
             time.sleep(.7)
             img.screenshot(f'{user_id}_{i}.png')
-        generate_file(user_id, file_name, profile)
+        generate_file(user_id, file_name, [profile['bio'], f'{user_id}_{i}.png'])
+        driver.quit()
 
 
 @app.command()

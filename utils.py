@@ -1,5 +1,7 @@
 import csv
+import os
 
+from dotenv import load_dotenv
 from selenium import webdriver
 
 
@@ -8,8 +10,12 @@ def use_driver():
 
     May upgrade later
     """
+    load_dotenv()
     options = webdriver.EdgeOptions()
     options.unhandled_prompt_behavior = 'dismiss'
+    user_data_path = os.getenv('BROWSER_PROFILE')
+    print(user_data_path)
+    options.add_argument(rf"user-data-dir={user_data_path}")
     options.add_argument("--disable-notifications")
     options.add_experimental_option("prefs", {
         "profile.default_content_setting_values.notifications": 2,

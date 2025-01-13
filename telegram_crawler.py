@@ -35,6 +35,7 @@ def get_profile(users: List[str], driver=None):
     for user_id in users:
 
         if re.search(r"^\d{10}$", str(int(user_id))):
+            # Go to add user phone
             contact_menu = driver.find_element(
                 By.ID,
                 "new-menu"
@@ -55,6 +56,7 @@ def get_profile(users: List[str], driver=None):
                     (By.XPATH,
                      "//button[@class='btn-circle btn-corner z-depth-1 is-visible rp']"))
             )
+            # Wait until the page is loaded then add the user to contacts
             time.sleep(1)
             add_contact = driver.find_element(
                 By.XPATH,
@@ -86,11 +88,12 @@ def get_profile(users: List[str], driver=None):
                     (By.XPATH,
                      "//button[@class='btn-primary btn-color-primary']"))
             )
-            create_contact_button = contact_menu = driver.find_element(
+            create_contact_button = driver.find_element(
                 By.XPATH,
                 "//button[@class='btn-primary btn-color-primary']"
             )
             create_contact_button.click()
+            # Wait for contact to be added
             WebDriverWait(driver, 60).until(
                 EC.invisibility_of_element_located(
                     (By.XPATH,
@@ -101,6 +104,8 @@ def get_profile(users: List[str], driver=None):
                     (By.XPATH,
                      "//div[@class='input-search']"))
             )
+            # check if there is any contact with that number
+            # if true, scrape their profile
             try:
                 search_bar_input = driver.find_element(
                     By.XPATH,
@@ -160,6 +165,7 @@ def get_profile(users: List[str], driver=None):
                         };
                 return result;"""
         )
+        # Get all profile images that are found
         for i in range(len(profile['avatarImages'])):
             WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH,
@@ -179,7 +185,8 @@ def get_profile(users: List[str], driver=None):
                 print("")
             time.sleep(.7)
             img.screenshot(f'{user_id}_{i}.png')
-        generate_file(user_id, file_name, [profile['bio'], f'{user_id}_{i}.png'])
+        # Save all the user's info
+        generate_file(user_id, file_name, [profile['bio'], f'{user_id}.png'])
         driver.quit()
 
 

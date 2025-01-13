@@ -14,7 +14,7 @@ def get_profile(users: List[str], driver=None):
     image if any telegram account exists for them
 
     Arguments:
-        users {List[str]} -- List of user names or phone numbers
+        users {List[str]} -- List of usernames and or phone numbers
         driver {seleniumWebdriver} -- Optional. pass the driver session
     Returns: None, writes two files, a profile image png file with the
     associated user's id as name and a csv file containing
@@ -22,8 +22,6 @@ def get_profile(users: List[str], driver=None):
     if not driver:
         driver = use_driver()
 
-    picture_class = "profile-avatars-avatar"
-    bio_class = "row-title pre-wrap"
     file_name = ("telegram"
                  + time.strftime("%Y%m%d", time.localtime())
                  + ".csv")
@@ -82,7 +80,7 @@ def get_profile(users: List[str], driver=None):
                     (By.XPATH,
                      "//button[@class='btn-primary btn-color-primary']"))
             )
-            create_contact_button = contact_menu = driver.find_element(
+            create_contact_button = driver.find_element(
                 By.XPATH,
                 "//button[@class='btn-primary btn-color-primary']"
             )
@@ -116,7 +114,9 @@ def get_profile(users: List[str], driver=None):
                 )
                 requested_user.click()
             except Exception as e:
-                generate_file("NO telegram account", file_name, ["no account for user:", user_id])
+                generate_file("NO telegram account",
+                              file_name,
+                              ["no account for user:", user_id])
                 print(e)
                 continue
 
@@ -158,10 +158,11 @@ def get_profile(users: List[str], driver=None):
         )
         for i in range(len(profile['avatarImages'])):
             WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH,
-                                            f"//div[@class='avatar avatar-like avatar-full"
-                                            + " avatar-gradient profile-avatars-avatar-first']"
-                                            + "/img[@class='avatar-photo']")))
+                EC.element_to_be_clickable(
+                    (By.XPATH,
+                     f"//div[@class='avatar avatar-like avatar-full"
+                     + " avatar-gradient profile-avatars-avatar-first']"
+                     + "/img[@class='avatar-photo']")))
             img = driver.find_element(
                 By.XPATH,
                 f"//div[@class='avatar avatar-like avatar-full"
@@ -175,7 +176,10 @@ def get_profile(users: List[str], driver=None):
                 print("")
             time.sleep(.7)
             img.screenshot(f'{user_id}_{i}.png')
-        generate_file(user_id, file_name, [profile['bio'], f'{user_id}_{i}.png'])
+        generate_file(user_id,
+                      file_name,
+                      [profile['bio'],
+                       f'{user_id}.png'])
         driver.quit()
 
 
@@ -187,8 +191,9 @@ print("On the verification page, waiting longer...")
 # Open the webpage
 driver.get(site)
 
-(WebDriverWait(driver, 60)
- .until(EC.presence_of_element_located((By.CLASS_NAME, "input-search"))))
+WebDriverWait(driver, 60).until(
+    EC.presence_of_element_located(
+        (By.CLASS_NAME, "input-search")))
 
 print("Getting user's profile...")
 get_profile(["varyoe"], driver)

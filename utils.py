@@ -25,7 +25,7 @@ def use_driver():
     return driver
 
 
-def generate_file(user_id, file_name, content):
+def generate_file(user_id, file_name: str, content: list):
     with open(file_name, 'a', encoding="utf-8-sig") as file:
         writer = csv.writer(file)
         content.append(user_id)

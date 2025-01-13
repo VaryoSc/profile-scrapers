@@ -1,5 +1,6 @@
 import re
 import time
+from traceback import print_tb
 from typing import List
 
 import typer
@@ -33,104 +34,106 @@ def get_profile(users: List[str], driver=None):
                  + ".csv")
 
     for user_id in users:
-
-        if re.search(r"^\d{10}$", str(int(user_id))):
-            # Go to add user phone
-            contact_menu = driver.find_element(
-                By.ID,
-                "new-menu"
-            )
-            contact_menu.click()
-            WebDriverWait(driver, 5).until(
-                EC.presence_of_element_located(
-                    (By.CLASS_NAME,
-                     "btn-menu-overlay"))
-            )
-            new_chat = driver.find_element(
-                By.XPATH,
-                "//div[@class='btn-menu top-left active was-open']/div[3]"
-            )
-            new_chat.click()
-            WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH,
-                     "//button[@class='btn-circle btn-corner z-depth-1 is-visible rp']"))
-            )
-            # Wait until the page is loaded then add the user to contacts
-            time.sleep(1)
-            add_contact = driver.find_element(
-                By.XPATH,
-                "//button[@class='btn-circle btn-corner z-depth-1 is-visible rp']/div[1]"
-            )
-            add_contact.click()
-            WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH,
-                     "//div[@class='input-field input-field-name']"))
-            )
-            name_input = driver.find_element(
-                By.XPATH,
-                "//div[@class='input-field input-field-name']/div[1]"
-            )
-            name_input.send_keys(user_id)
-            WebDriverWait(driver, 5).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH,
-                     "//div[@class='input-field input-field-phone']"))
-            )
-            phone_input = driver.find_element(
-                By.XPATH,
-                "//div[@class='input-field input-field-phone']/div[1]"
-            )
-            phone_input.send_keys(user_id)
-            WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH,
-                     "//button[@class='btn-primary btn-color-primary']"))
-            )
-            create_contact_button = driver.find_element(
-                By.XPATH,
-                "//button[@class='btn-primary btn-color-primary']"
-            )
-            create_contact_button.click()
-            # Wait for contact to be added
-            WebDriverWait(driver, 60).until(
-                EC.invisibility_of_element_located(
-                    (By.XPATH,
-                     "//button[@class='btn-primary btn-color-primary']"))
-            )
-            WebDriverWait(driver, 15).until(
-                EC.element_to_be_clickable(
-                    (By.XPATH,
-                     "//div[@class='input-search']"))
-            )
-            # check if there is any contact with that number
-            # if true, scrape their profile
-            try:
-                search_bar_input = driver.find_element(
-                    By.XPATH,
-                    "//div[@class='input-search']/input[1]"
+        try:
+            if re.search(r"^\d{10}$", str(int(user_id))):
+                WebDriverWait(driver, 5).until(EC.element_to_be_clickable(
+                    (By.ID,
+                    "new-menu"))
                 )
-                search_bar_input.click()
-                search_bar_input.send_keys(user_id)
+                contact_menu = driver.find_element(
+                    By.ID,
+                    "new-menu"
+                )
+                contact_menu.click()
+                WebDriverWait(driver, 5).until(
+                    EC.presence_of_element_located(
+                        (By.CLASS_NAME,
+                         "btn-menu-overlay"))
+                )
+                new_chat = driver.find_element(
+                    By.XPATH,
+                    "//div[@class='btn-menu top-left active was-open']/div[3]"
+                )
+                new_chat.click()
+                WebDriverWait(driver, 5).until(
+                    EC.element_to_be_clickable(
+                        (By.XPATH,
+                         "//button[@class='btn-circle btn-corner z-depth-1 is-visible rp']"))
+                )
                 time.sleep(1)
+                add_contact = driver.find_element(
+                    By.XPATH,
+                    "//button[@class='btn-circle btn-corner z-depth-1 is-visible rp']/div[1]"
+                )
+                add_contact.click()
+                WebDriverWait(driver, 5).until(
+                    EC.element_to_be_clickable(
+                        (By.XPATH,
+                         "//div[@class='input-field input-field-name']"))
+                )
+                name_input = driver.find_element(
+                    By.XPATH,
+                    "//div[@class='input-field input-field-name']/div[1]"
+                )
+                name_input.send_keys(user_id)
+                WebDriverWait(driver, 5).until(
+                    EC.element_to_be_clickable(
+                        (By.XPATH,
+                         "//div[@class='input-field input-field-phone']"))
+                )
+                phone_input = driver.find_element(
+                    By.XPATH,
+                    "//div[@class='input-field input-field-phone']/div[1]"
+                )
+                phone_input.send_keys(user_id)
                 WebDriverWait(driver, 10).until(
                     EC.element_to_be_clickable(
                         (By.XPATH,
-                         "//ul[@id='contacts']/a[1]"))
+                         "//button[@class='btn-primary btn-color-primary']"))
                 )
-                requested_user = driver.find_element(
+                create_contact_button = driver.find_element(
                     By.XPATH,
-                    "//ul[@id='contacts']/a[1]"
+                    "//button[@class='btn-primary btn-color-primary']"
                 )
-                requested_user.click()
-            except Exception as e:
-                generate_file("NO telegram account", file_name, ["no account for user:", user_id])
-                print(e)
-                continue
+                create_contact_button.click()
+                WebDriverWait(driver, 60).until(
+                    EC.invisibility_of_element_located(
+                        (By.XPATH,
+                         "//button[@class='btn-primary btn-color-primary']"))
+                )
+                WebDriverWait(driver, 15).until(
+                    EC.element_to_be_clickable(
+                        (By.XPATH,
+                         "//div[@class='input-search']"))
+                )
+                try:
+                    search_bar_input = driver.find_element(
+                        By.XPATH,
+                        "//div[@class='input-search']/input[1]"
+                    )
+                    search_bar_input.click()
+                    search_bar_input.send_keys(user_id)
+                    time.sleep(1)
+                    WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable(
+                            (By.XPATH,
+                             "//ul[@id='contacts']/a[1]"))
+                    )
+                    requested_user = driver.find_element(
+                        By.XPATH,
+                        "//ul[@id='contacts']/a[1]"
+                    )
+                    requested_user.click()
+                except Exception as e:
+                    generate_file("NO telegram account",
+                                  file_name,
+                                  ["no account for user:", user_id])
+                    print(e)
+                    continue
 
 
-        else:
+        except Exception as e:
+            print("getting uesr by id ", e)
             url = f'https://web.telegram.org/k/#?tgaddr=tg%3A%2F%2Fresolve%3Fdomain%3D{user_id}'
             driver.get(url)
 

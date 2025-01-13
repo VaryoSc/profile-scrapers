@@ -6,9 +6,9 @@ from selenium import webdriver
 
 
 def use_driver():
-    """placeholder code to generate the webdriver
+    """Create an instance of webdriver with our desired settings
 
-    May upgrade later
+    Returns: selenium webdriver
     """
     load_dotenv()
     options = webdriver.EdgeOptions()

@@ -1,4 +1,4 @@
-###A cli app written to crawl and store social media 
+### A cli app written to crawl and store social media 
 profiles with slight search capabilities
 
 As of now, support for WhatsApp, Telegram, Instagram and LinkedIn
